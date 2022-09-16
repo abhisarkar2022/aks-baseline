@@ -35,10 +35,10 @@ on:
     branches: [ main ]
 
 env:
-  RESOURCE_GROUP_LOCATION: 'eastus2'                              # The location where the resource group is going to be created
+  RESOURCE_GROUP_LOCATION: 'canadacentral'                              # The location where the resource group is going to be created
   RESOURCE_GROUP: 'rg-bu0001a0008'                                           # The name for the AKS cluster resource group
-  AKS_LOCATION: 'eastus2'                                         # The location where the AKS cluster is going to be deployed
-  # GEO_REDUNDANCY_LOCATION: 'centralus'                              # The location for Azure resources that support native geo-redunancy. Should be different than the location parameter and ideally should be a paired region - https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions. This region does not need to support availability zones.
+  AKS_LOCATION: 'canadacentral'                                         # The location where the AKS cluster is going to be deployed
+  GEO_REDUNDANCY_LOCATION: 'canadaeast'                              # The location for Azure resources that support native geo-redunancy. Should be different than the location parameter and ideally should be a paired region - https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions. This region does not need to support availability zones.
   TARGET_VNET_RESOURCE_ID: '/subscriptions/9c5ca55e-ea9c-4a3f-b1be-87c76fc15cf8/resourceGroups/rg-enterprise-networking-spokes/providers/Microsoft.Network/virtualNetworks/vnet-spoke-BU0001A0008-00'                       # The regional network spoke VNet Resource ID that the cluster will be joined to
   K8S_RBAC_AAD_PROFILE_TENANTID: '16b3c013-d300-468d-ac64-7eda0820b6d3'          # The tenant to integrate AKS-managed Azure AD
   K8S_RBAC_AAD_PROFILE_ADMIN_GROUP_OBJECTID: 'e3db31b0-98d6-40a5-94f6-0581341e1913' # The Azure AD group object ID that has admin access to the AKS cluster
@@ -74,6 +74,7 @@ jobs:
             --name "cluster-stamp" \
             --parameters \
               location=${{ env.AKS_LOCATION }} \
+              geoRedundancyLocation=${{ env.GEO_REDUNDANCY_LOCATION }} \
               targetVnetResourceId=${{ env.TARGET_VNET_RESOURCE_ID }} \
               k8sControlPlaneAuthorizationTenantId=${{ env.K8S_RBAC_AAD_PROFILE_TENANTID }} \
               clusterAdminAadGroupObjectId=${{ env.K8S_RBAC_AAD_PROFILE_ADMIN_GROUP_OBJECTID }} \
