@@ -54,12 +54,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set up kubelogin for non-interactive login
+    - name: Installing kubectl via az aks install-cli
       run: |
-         curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.9/kubelogin-linux-amd64.zip
-         sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
-         rm -f kubelogin-linux-amd64.zip
-         kubelogin --version
+        az aks install-cli
         
     # Login into your Azure Subscription using your Azure credentials - make sure the credentials has write permissions for the specific resource group/subscription. The credentials should be stored in GitHub Secrets - (Go to Settings Tab ->Secrets)
     - name: Azure Login
@@ -77,7 +74,7 @@ jobs:
         cluster-name: 'aks-ts46ikftguequ'
         resource-group: ${{ env.RESOURCE_GROUP }}
         admin: 'false'
-        use-kubelogin: 'true'           
+        use-kubelogin: 'true'      
 
     # Apply a manifest file from this repo. Technically this manifest file does NOT need to be
     # applied. It is a namespace manifest which was already deployed as part of the bootstrapping
