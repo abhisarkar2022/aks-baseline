@@ -90,12 +90,14 @@ jobs:
     # a pattern like the following. They don't do anything meaningful, but are left here as a quickstart
     # guide for your own post-deployment, pipeline-based configuration
     - name: Set the AKS cluster context
-      uses: Azure/aks-set-context@v1
+      uses: Azure/aks-set-context@v3
       if: github.event_name == 'push'
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
         cluster-name: ${{ steps.aks-cluster.outputs.name }}
         resource-group: ${{ env.RESOURCE_GROUP }}
+        admin: 'false'
+        use-kubelogin: 'true'
 
     # Apply a manifest file from this repo. Technically this manifest file does NOT need to be
     # applied. It is a namespace manifest which was already deployed as part of the bootstrapping
