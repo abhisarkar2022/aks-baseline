@@ -1630,7 +1630,7 @@ resource pdzAksIngress 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 
 resource mc 'Microsoft.ContainerService/managedClusters@2022-03-02-preview' = {
   name: clusterName
-  location: location
+  location: 'canadacentral'
   tags: {
     'Business unit': 'BU0001'
     'Application identifier': 'a0008'
