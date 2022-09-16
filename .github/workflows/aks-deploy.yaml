@@ -86,6 +86,13 @@ jobs:
 
           echo "::set-output name=name::$(az deployment group show --resource-group ${{ env.RESOURCE_GROUP }} -n cluster-stamp --query properties.outputs.aksClusterName.value -o tsv)"
 
+    - name: Set up kubelogin for non-interactive login
+            run: |
+              curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.9/kubelogin-linux-amd64.zip
+              sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
+              rm -f kubelogin-linux-amd64.zip
+              kubelogin --version
+          
     # If you needed to do any post-deployment bootstrapping that was not already set up you can follow
     # a pattern like the following. They don't do anything meaningful, but are left here as a quickstart
     # guide for your own post-deployment, pipeline-based configuration
