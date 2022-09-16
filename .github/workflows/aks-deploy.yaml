@@ -60,11 +60,6 @@ jobs:
          sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
          rm -f kubelogin-linux-amd64.zip
          kubelogin --version
-
-    - name: Azure CLI
-      uses: Azure/cli@v1
-      with:
-        azcliversion: 2.30.0
         
     # Login into your Azure Subscription using your Azure credentials - make sure the credentials has write permissions for the specific resource group/subscription. The credentials should be stored in GitHub Secrets - (Go to Settings Tab ->Secrets)
     - name: Azure Login
