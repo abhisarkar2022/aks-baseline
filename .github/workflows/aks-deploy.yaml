@@ -54,15 +54,41 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Installing kubectl via az aks install-cli
-      run: |
-        sudo az aks install-cli
-        
     # Login into your Azure Subscription using your Azure credentials - make sure the credentials has write permissions for the specific resource group/subscription. The credentials should be stored in GitHub Secrets - (Go to Settings Tab ->Secrets)
     - name: Azure Login
       uses: Azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Deploy the cluster into your environment, assuming all prerequisites are up and running.
+    - name: Azure CLI - Deploy AKS cluster
+      id: aks-cluster
+      uses: Azure/cli@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+         az group create --name ${{ env.RESOURCE_GROUP }} --location ${{ env.RESOURCE_GROUP_LOCATION }}
+         az deployment group $([[ ${{ github.event_name }} = pull_request ]] && echo what-if --no-pretty-print || echo create) \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file "cluster-stamp.bicep" \
+            --name "cluster-stamp" \
+            --parameters \
+              location=${{ env.AKS_LOCATION }} \
+              targetVnetResourceId=${{ env.TARGET_VNET_RESOURCE_ID }} \
+              k8sControlPlaneAuthorizationTenantId=${{ env.K8S_RBAC_AAD_PROFILE_TENANTID }} \
+              clusterAdminAadGroupObjectId=${{ env.K8S_RBAC_AAD_PROFILE_ADMIN_GROUP_OBJECTID }} \
+              a0008NamespaceReaderAadGroupObjectId=${{ env.K8S_RBAC_AAD_A0008_READER_GROUP_OBJECTID }} \
+              clusterAuthorizedIPRanges=${{ env.CLUSTER_AUTHORIZED_IP_RANGES}} \
+              appGatewayListenerCertificate=${{ secrets.APP_GATEWAY_LISTENER_CERTIFICATE_BASE64 }} \
+              aksIngressControllerCertificate=${{ secrets.AKS_INGRESS_CONTROLLER_CERTIFICATE_BASE64 }} \
+              domainName=${{ env.DOMAIN_NAME }} \
+              gitOpsBootstrappingRepoHttpsUrl=${{ env.BOOTSTRAPPING_REPO_HTTPS_URL }}
+
+          echo "::set-output name=name::$(az deployment group show --resource-group ${{ env.RESOURCE_GROUP }} -n cluster-stamp --query properties.outputs.aksClusterName.value -o tsv)"
+
+    - name: Installing kubectl via az aks install-cli
+      run: |
+        sudo az aks install-cli
           
     # If you needed to do any post-deployment bootstrapping that was not already set up you can follow
     # a pattern like the following. They don't do anything meaningful, but are left here as a quickstart
@@ -71,18 +97,13 @@ jobs:
       uses: Azure/aks-set-context@v3
       if: github.event_name == 'push'
       with:
-        cluster-name: 'aks-ts46ikftguequ'
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: ${{ steps.aks-cluster.outputs.name }}
         resource-group: ${{ env.RESOURCE_GROUP }}
         admin: 'false'
-        use-kubelogin: 'true'      
+        use-kubelogin: 'true'
 
-    # Apply a manifest file from this repo. Technically this manifest file does NOT need to be
-    # applied. It is a namespace manifest which was already deployed as part of the bootstrapping
-    # process.
-    - name: Create the cluster-baseline-settings namespace
-      uses: Azure/k8s-deploy@v3.1
-      if: github.event_name == 'push'
-      with:
-        namespace: 'cluster-baseline-settings'
-        manifests: |
-          cluster-manifests/cluster-baseline-settings/ns-cluster-baseline-settings.yaml
+    # Validate install
+    - name: Validate install
+      run: |
+        kubectl get no
