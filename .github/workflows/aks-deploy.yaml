@@ -102,8 +102,3 @@ jobs:
         resource-group: ${{ env.RESOURCE_GROUP }}
         admin: 'false'
         use-kubelogin: 'true'
-
-    # Validate install
-    - name: Validate install
-      run: |
-        kubectl get no
