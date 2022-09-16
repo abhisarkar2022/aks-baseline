@@ -54,18 +54,24 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Login into your Azure Subscription using your Azure credentials - make sure the credentials has write permissions for the specific resource group/subscription. The credentials should be stored in GitHub Secrets - (Go to Settings Tab ->Secrets)
-    - name: Azure Login
-      uses: Azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
     - name: Set up kubelogin for non-interactive login
       run: |
          curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.9/kubelogin-linux-amd64.zip
          sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
          rm -f kubelogin-linux-amd64.zip
          kubelogin --version
+
+    - name: Azure CLI - Deploy AKS cluster
+      id: aks-cluster
+      uses: Azure/cli@v1
+      with:
+        azcliversion: 2.30.0
+        
+    # Login into your Azure Subscription using your Azure credentials - make sure the credentials has write permissions for the specific resource group/subscription. The credentials should be stored in GitHub Secrets - (Go to Settings Tab ->Secrets)
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
           
     # If you needed to do any post-deployment bootstrapping that was not already set up you can follow
     # a pattern like the following. They don't do anything meaningful, but are left here as a quickstart
