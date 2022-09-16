@@ -87,11 +87,11 @@ jobs:
           echo "::set-output name=name::$(az deployment group show --resource-group ${{ env.RESOURCE_GROUP }} -n cluster-stamp --query properties.outputs.aksClusterName.value -o tsv)"
 
     - name: Set up kubelogin for non-interactive login
-            run: |
-              curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.9/kubelogin-linux-amd64.zip
-              sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
-              rm -f kubelogin-linux-amd64.zip
-              kubelogin --version
+      run: |
+         curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.9/kubelogin-linux-amd64.zip
+         sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
+         rm -f kubelogin-linux-amd64.zip
+         kubelogin --version
           
     # If you needed to do any post-deployment bootstrapping that was not already set up you can follow
     # a pattern like the following. They don't do anything meaningful, but are left here as a quickstart
@@ -103,7 +103,7 @@ jobs:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
         cluster-name: ${{ steps.aks-cluster.outputs.name }}
         resource-group: ${{ env.RESOURCE_GROUP }}
-        admin: 'false'
+        admin: 'false'            
 
     # Apply a manifest file from this repo. Technically this manifest file does NOT need to be
     # applied. It is a namespace manifest which was already deployed as part of the bootstrapping
