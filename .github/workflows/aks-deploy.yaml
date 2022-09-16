@@ -68,7 +68,7 @@ jobs:
       uses: Azure/aks-set-context@v3
       if: github.event_name == 'push'
       with:
-        cluster-name: ${{ steps.aks-cluster.outputs.name }}
+        cluster-name: 'aks-ts46ikftguequ'
         resource-group: ${{ env.RESOURCE_GROUP }}
 
     # Apply a manifest file from this repo. Technically this manifest file does NOT need to be
