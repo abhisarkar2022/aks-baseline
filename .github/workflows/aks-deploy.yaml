@@ -97,7 +97,6 @@ jobs:
         cluster-name: ${{ steps.aks-cluster.outputs.name }}
         resource-group: ${{ env.RESOURCE_GROUP }}
         admin: 'false'
-        use-kubelogin: 'true'
 
     # Apply a manifest file from this repo. Technically this manifest file does NOT need to be
     # applied. It is a namespace manifest which was already deployed as part of the bootstrapping
