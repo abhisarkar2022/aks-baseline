@@ -90,7 +90,7 @@ jobs:
       run: |
         sudo az aks install-cli
           
-    # If you needed to do any post-deployment bootstrapping that was not already set up you can follow
+    # If you needed to do any post-deployment bootstrapping that was not already set up you can follow.
     # a pattern like the following. They don't do anything meaningful, but are left here as a quickstart
     # guide for your own post-deployment, pipeline-based configuration
     - name: Set the AKS cluster context
