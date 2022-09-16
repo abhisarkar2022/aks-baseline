@@ -103,13 +103,14 @@ jobs:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
         cluster-name: ${{ steps.aks-cluster.outputs.name }}
         resource-group: ${{ env.RESOURCE_GROUP }}
-        admin: 'false'            
+        admin: 'false'
+        use-kubelogin: 'true'
 
     # Apply a manifest file from this repo. Technically this manifest file does NOT need to be
     # applied. It is a namespace manifest which was already deployed as part of the bootstrapping
     # process.
     - name: Create the cluster-baseline-settings namespace
-      uses: Azure/k8s-deploy@v1
+      uses: Azure/k8s-deploy@v3.1
       if: github.event_name == 'push'
       with:
         namespace: 'cluster-baseline-settings'
