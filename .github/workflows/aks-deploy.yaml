@@ -86,19 +86,4 @@ jobs:
 
           echo "::set-output name=name::$(az deployment group show --resource-group ${{ env.RESOURCE_GROUP }} -n cluster-stamp --query properties.outputs.aksClusterName.value -o tsv)"
 
-    - name: Installing kubectl via az aks install-cli
-      run: |
-        sudo az aks install-cli
-          
-    # If you needed to do any post-deployment bootstrapping that was not already set up you can follow.
-    # a pattern like the following. They don't do anything meaningful, but are left here as a quickstart
-    # guide for your own post-deployment, pipeline-based configuration
-    - name: Set the AKS cluster context
-      uses: Azure/aks-set-context@v3
-      if: github.event_name == 'push'
-      with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
-        cluster-name: ${{ steps.aks-cluster.outputs.name }}
-        resource-group: ${{ env.RESOURCE_GROUP }}
-        admin: 'false'
-        use-kubelogin: 'true'
+
